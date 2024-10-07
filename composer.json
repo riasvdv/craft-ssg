@@ -1,0 +1,52 @@
+{
+  "name": "rias/craft-ssg",
+  "description": "Static Site Generation for Craft CMS",
+  "type": "craft-plugin",
+  "license": "mit",
+  "support": {
+    "email": "hey@rias.be",
+    "issues": "https://github.com/riasvdv/craft-ssg/issues?state=open",
+    "source": "https://github.com/riasvdv/craft-ssg",
+    "docs": "https://github.com/riasvdv/craft-ssg",
+    "rss": "https://github.com/riasvdv/craft-ssg/releases.atom"
+  },
+  "require": {
+    "php": ">=8.2",
+    "craftcms/cms": "^5.4.0"
+  },
+  "require-dev": {
+    "craftcms/ecs": "dev-main",
+    "craftcms/phpstan": "dev-main",
+    "spatie/fork": "^1.2"
+  },
+  "suggest": {
+    "spatie/fork": "To enable concurrency higher than one."
+  },
+  "autoload": {
+    "psr-4": {
+      "rias\\ssg\\": "src/"
+    }
+  },
+  "extra": {
+    "handle": "ssg",
+    "name": "ssg",
+    "developer": "Rias",
+    "documentationUrl": "https://github.com/riasvdv/craft-ssg",
+    "class": "rias\\ssg\\SSG"
+  },
+  "scripts": {
+    "check-cs": "ecs check --ansi",
+    "fix-cs": "ecs check --ansi --fix",
+    "phpstan": "phpstan --memory-limit=1G"
+  },
+  "config": {
+    "sort-packages": true,
+    "platform": {
+      "php": "8.2"
+    },
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
+  }
+}

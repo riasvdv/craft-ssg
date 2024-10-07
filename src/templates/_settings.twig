@@ -1,0 +1,95 @@
+{# @var plugin \rias\ssg\SSG #}
+{# @var settings \rias\ssg\models\Settings #}
+
+{% import '_includes/forms.twig' as forms %}
+
+{% set title = 'Static Site Generation' %}
+
+{% macro configWarning(setting) -%}
+    {% set setting = '<code>'~setting~'</code>' %}
+    {{ "This is being overridden by the {setting} config setting in your {file} config file."|t('ssg', {
+        setting: setting,
+        file: 'ssg.php'
+    })|raw }}
+{%- endmacro %}
+
+{% from _self import configWarning %}
+
+{{ forms.autosuggestField({
+    first:        true,
+    label:        "Base URL",
+    required:     true,
+    id:           'baseUrl',
+    name:         'baseUrl',
+    instructions: "This informs the generator where the static site will eventually be hosted. It should be an absolute URL, for example: \"https://craftcms.com\"",
+    value:        settings.baseUrl,
+    suggestEnvVars: true,
+    autofocus:    true,
+    disabled:     'baseUrl' in overrides,
+    warning:      'baseUrl' in overrides ? configWarning('baseUrl'),
+    errors:       settings.getErrors('baseUrl')
+}) }}
+
+{{ forms.autosuggestField({
+    label:        "Destination",
+    required:     true,
+    id:           'destination',
+    name:         'destination',
+    instructions: "This option defines where the static files will be saved.",
+    value:        settings.destination,
+    suggestEnvVars: true,
+    suggestAliases: true,
+    disabled:     'destination' in overrides,
+    warning:      'destination' in overrides ? configWarning('destination'),
+    errors:       settings.getErrors('destination'),
+}) }}
+
+{{ forms.lightswitchField({
+    label: 'Clear the destination folder',
+    required: true,
+    id: 'clear',
+    name: 'clear',
+    instructions: 'Clear the destination folder each time the static site generates.',
+    on: settings.clear,
+    disabled:     'clear' in overrides,
+    warning:      'clear' in overrides ? configWarning('clear'),
+    errors:       settings.getErrors('clear'),
+}) }}
+
+{{ forms.editableTableField({
+    label: 'Copy files & directories',
+    required: false,
+    id: 'copy',
+    name: 'copy',
+    instructions: 'Define a set of directories and files to be copied along with the generated files. For example, you may want to link your CSS, JavaScript, static images, and perhaps any uploaded assets.',
+    rows: settings.copy,
+    disabled:     'copy' in overrides,
+    warning:      'copy' in overrides ? configWarning('copy'),
+    errors:       settings.getErrors('copy'),
+    cols: [
+        {'type': 'autosuggest', 'suggestEnvVars': true, 'suggestAliases': true, 'info': 'Absolute paths, you can use aliases like @webroot', 'heading': 'from'},
+        {'type': 'autosuggest', 'suggestEnvVars': true, 'suggestAliases': true, 'info': 'Relative to the destination folder', 'heading': 'to'},
+    ],
+    allowAdd: true,
+    allowDelete: true,
+}) }}
+
+{{ forms.textField({
+    label: 'Concurrency',
+    required: false,
+    type: 'number',
+    step: 1,
+    min: 1,
+    max: forkInstalled ? null : 1,
+    id: 'concurrency',
+    name: 'concurrency',
+    instructions: 'The concurrency with which to generate static pages.',
+    value: settings.concurrency,
+    disabled:     'concurrency' in overrides or not forkInstalled,
+    warning:      'concurrency' in overrides ? configWarning('concurrency') : (forkInstalled ? '' : 'You need to install the spatie/fork package to increase concurrency.'),
+    errors:       settings.getErrors('concurrency'),
+}) }}
+
+<p class="light">
+    You can run the static site generation using `<code>php craft ssg/static/generate</code>`
+</p>
