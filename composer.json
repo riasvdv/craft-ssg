@@ -29,7 +29,7 @@
   },
   "extra": {
     "handle": "ssg",
-    "name": "ssg",
+    "name": "Static Site Generation",
     "developer": "Rias",
     "documentationUrl": "https://github.com/riasvdv/craft-ssg",
     "class": "rias\\ssg\\SSG"
