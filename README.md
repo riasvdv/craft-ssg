@@ -40,3 +40,5 @@ Generate your static site by running:
 ```shell
 php craft ssg/static/generate
 ```
+
+You can find a demo of the [europa museum demo statically generated here](https://craft-ssg.pages.dev/).
