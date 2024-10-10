@@ -127,8 +127,9 @@ class Generator
                     Console::updateProgress($count++, $total, $prefix);
                 })
                 ->run(...$urls)),
-            default => collect($urls)->each(function(Closure $closure) use ($prefix, $total, &$count) {
+            default => collect($urls)->map(function(Closure $closure) use ($prefix, $total, &$count) {
                 Console::updateProgress($count++, $total, $prefix);
+
                 return $closure();
             }
             )
