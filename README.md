@@ -41,4 +41,34 @@ Generate your static site by running:
 php craft ssg/static/generate
 ```
 
+## Events
+
+You can listen to events and add additional functionality like this:
+
+```php
+use craft\base\Event;
+use rias\ssg\SSG;
+use rias\ssg\events\BeforeGeneratingEvent;
+
+Event::on(
+    SSG::class,
+    SSG::EVENT_BEFORE_GENERATING,
+    function (BeforeGeneratingEvent $event) {
+        // Your code here
+    }
+);
+```
+
+A list of events can be found below.
+
+### `SSG::EVENT_BEFORE_GENERATING`
+
+This event is fired before generating a site. You can set `->isValid` to `false` on the event to cancel the generation.
+
+### `SSG::EVENT_AFTER_GENERATING`
+
+This event is fired after generating a site.
+
+## Demo
+
 You can find a demo of the [europa museum demo statically generated here](https://craft-ssg.pages.dev/).

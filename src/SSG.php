@@ -19,6 +19,16 @@ use rias\ssg\models\Settings;
  */
 class SSG extends Plugin
 {
+    /**
+     * @event SSGEvent The event that is triggered before generating a site.
+     */
+    public const EVENT_BEFORE_GENERATING = 'beforeGenerating';
+
+    /**
+     * @event SSGEvent The event that is triggered after generating a site.
+     */
+    public const EVENT_AFTER_GENERATING = 'afterGenerating';
+
     public bool $hasCpSettings = true;
 
     public function init(): void

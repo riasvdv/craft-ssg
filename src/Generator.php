@@ -13,6 +13,8 @@ use craft\helpers\Console;
 use craft\helpers\FileHelper;
 use craft\helpers\StringHelper;
 use Illuminate\Support\Collection;
+use rias\ssg\events\AfterGeneratingEvent;
+use rias\ssg\events\BeforeGeneratingEvent;
 use Spatie\Fork\Fork;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -85,6 +87,16 @@ class Generator
             throw new Exception("You must install **spatie/fork** to use concurrency more than 1.");
         }
 
+        if (SSG::getInstance()->hasEventHandlers(SSG::EVENT_BEFORE_GENERATING)) {
+            $event = new BeforeGeneratingEvent();
+            SSG::getInstance()->trigger(SSG::EVENT_BEFORE_GENERATING, $event);
+            if (! $event->isValid) {
+                Console::outputWarning("Generating was cancelled by beforeGenerating event.");
+
+                return;
+            }
+        }
+
         $this->destination = App::parseEnv($this->destination);
         $this->baseUrl = App::parseEnv($this->baseUrl);
 
@@ -92,6 +104,10 @@ class Generator
             ->createContent()
             ->copyFiles()
             ->outputSummary();
+
+        if (SSG::getInstance()->hasEventHandlers(SSG::EVENT_AFTER_GENERATING)) {
+            SSG::getInstance()->trigger(SSG::EVENT_AFTER_GENERATING, new AfterGeneratingEvent());
+        }
     }
 
     public function clearDirectory(): self
