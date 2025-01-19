@@ -36,6 +36,8 @@ class Generator
 
     private Collection $errors;
 
+    private bool $verbose = false;
+
     private function __construct()
     {
         $this->phpExecutable = (new PhpExecutableFinder())->find();
@@ -77,6 +79,13 @@ class Generator
     public function destination(string $destination): self
     {
         $this->destination = $destination;
+
+        return $this;
+    }
+
+    public function verbose(bool $verbose): self
+    {
+        $this->verbose = $verbose;
 
         return $this;
     }
@@ -237,6 +246,10 @@ class Generator
             str_contains($content, 'Twig\Error\RuntimeError') => '500 - Twig Runtime Error',
             default => 'Unknown error, visit the page to see any exceptions',
         };
+
+        if ($this->verbose) {
+            $message .= " - {$content}";
+        }
 
         $errors[] = "Error: {$url}: {$message}";
 

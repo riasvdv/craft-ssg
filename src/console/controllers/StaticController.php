@@ -32,6 +32,11 @@ class StaticController extends Controller
     public ?bool $disableClear = null;
 
     /**
+     * @var bool Verbose, display detailed errors.
+     */
+    public bool $verbose = false;
+
+    /**
      * @inheritDoc
      */
     public function options($actionID): array
@@ -42,6 +47,7 @@ class StaticController extends Controller
             $options[] = 'destination';
             $options[] = 'concurrency';
             $options[] = 'disableClear';
+            $options[] = 'verbose';
         }
 
         return $options;
@@ -60,6 +66,7 @@ class StaticController extends Controller
             ->concurrency($this->concurrency ?? $settings->concurrency)
             ->baseUrl($settings->baseUrl)
             ->disableClear($this->disableClear ?? !$settings->clear)
+            ->verbose($this->verbose)
             ->generate();
 
         return ExitCode::OK;
