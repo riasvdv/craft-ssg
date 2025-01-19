@@ -12,6 +12,7 @@ use craft\helpers\App;
 use craft\helpers\Console;
 use craft\helpers\FileHelper;
 use craft\helpers\StringHelper;
+use craft\models\Site;
 use Illuminate\Support\Collection;
 use rias\ssg\events\AfterGeneratingEvent;
 use rias\ssg\events\BeforeGeneratingEvent;
@@ -208,10 +209,12 @@ class Generator
     private function getUrls(): Collection
     {
         return collect()
+            ->merge(collect(Craft::$app->getSites()->getAllSites())->map(fn(Site $site) => $site->baseUrl)->filter())
             ->merge(collect(Entry::findAll())->map(fn(Entry $entry) => $entry->getUrl()))
             ->merge(collect(Category::findAll())->map(fn(Category $category) => $category->getUrl()))
             ->merge(collect(User::findAll())->map(fn(User $user) => $user->getUrl()))
             ->filter()
+            ->unique()
             ->map(fn(string $url) => new Url($url, $this->destination));
     }
 
