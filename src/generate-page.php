@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 use craft\web\View;
 
-[$_, $url, $oldBaseUrl, $newBaseUrl, $root, $webroot] = $argv;
+[$_, $url, $siteBaseUrlsJson, $newBaseUrl, $root, $webroot] = $argv;
+$siteBaseUrls = json_decode($siteBaseUrlsJson, true);
 
 $https = parse_url($url, PHP_URL_SCHEME) === 'https';
 
@@ -32,8 +35,18 @@ $app->run();
 
 $contents = ob_get_clean();
 
-if ($newBaseUrl && $oldBaseUrl !== $newBaseUrl) {
-    $contents = str_replace($oldBaseUrl, $newBaseUrl, $contents);
+if ($newBaseUrl && $siteBaseUrls) {
+    foreach ($siteBaseUrls as $siteBaseUrl) {
+        if ($siteBaseUrl === $newBaseUrl) {
+            continue;
+        }
+
+        // Determine the relative path of this site from the primary site
+        $sitePath = parse_url($siteBaseUrl, PHP_URL_PATH) ?? '/';
+        $newSiteBaseUrl = rtrim($newBaseUrl, '/') . $sitePath;
+
+        $contents = str_replace($siteBaseUrl, $newSiteBaseUrl, $contents);
+    }
 }
 
 echo $contents;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace rias\ssg;
 
 use Closure;
@@ -29,6 +31,8 @@ class Generator
 
     private bool $disableClear = false;
 
+    private bool $directoryIndex = false;
+
     private string $destination = '@storage/static';
 
     private string $phpExecutable;
@@ -53,7 +57,8 @@ class Generator
             ->destination($settings->destination)
             ->concurrency($settings->concurrency)
             ->baseUrl($settings->baseUrl)
-            ->disableClear(!$settings->clear);
+            ->disableClear(!$settings->clear)
+            ->directoryIndex($settings->directoryIndex);
     }
 
     public function concurrency(int $concurrency): self
@@ -73,6 +78,13 @@ class Generator
     public function disableClear(bool $disableClear = true): self
     {
         $this->disableClear = $disableClear;
+
+        return $this;
+    }
+
+    public function directoryIndex(bool $directoryIndex): self
+    {
+        $this->directoryIndex = $directoryIndex;
 
         return $this;
     }
@@ -100,7 +112,7 @@ class Generator
         if (SSG::getInstance()->hasEventHandlers(SSG::EVENT_BEFORE_GENERATING)) {
             $event = new BeforeGeneratingEvent();
             SSG::getInstance()->trigger(SSG::EVENT_BEFORE_GENERATING, $event);
-            if (! $event->isValid) {
+            if (!$event->isValid) {
                 Console::outputWarning("Generating was cancelled by beforeGenerating event.");
 
                 return;
@@ -217,16 +229,23 @@ class Generator
             ->merge(collect(User::findAll())->map(fn(User $user) => $user->getUrl()))
             ->filter()
             ->unique()
-            ->map(fn(string $url) => new Url($url, $this->destination));
+            ->map(fn(string $url) => new Url($url, $this->destination, $this->directoryIndex));
     }
 
     private function generatePage(Url $url): array
     {
+        $siteBaseUrls = collect(Craft::$app->getSites()->getAllSites())
+            ->map(fn(Site $site) => $site->baseUrl)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
         $process = new Process([
             $this->phpExecutable,
             __DIR__ . '/generate-page.php',
             (string) $url,
-            Craft::$app->getSites()->getPrimarySite()->baseUrl,
+            json_encode($siteBaseUrls),
             $this->baseUrl ?? Craft::$app->getSites()->getPrimarySite()->baseUrl,
             Craft::getAlias('@root'),
             Craft::getAlias('@webroot'),
@@ -281,7 +300,7 @@ class Generator
                     ? preg_replace("#{$match[2]}\d+#", $match[1], $url)
                     : $url . $match[1];
 
-                $nextUrl = new Url($nextUrl, $this->destination);
+                $nextUrl = new Url($nextUrl, $this->destination, $this->directoryIndex);
 
                 if (!file_exists($nextUrl->path())) {
                     return $this->generatePage($nextUrl);

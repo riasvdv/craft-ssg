@@ -56,6 +56,18 @@
     errors:       settings.getErrors('clear'),
 }) }}
 
+{{ forms.lightswitchField({
+    label: 'Use directory index files',
+    required: true,
+    id: 'directoryIndex',
+    name: 'directoryIndex',
+    instructions: 'Use folder-based structure with index.html files instead of flat .html files. For example, `/about` will generate `about/index.html` instead of `about.html`.',
+    on: settings.directoryIndex,
+    disabled:     'directoryIndex' in overrides,
+    warning:      'directoryIndex' in overrides ? configWarning('directoryIndex'),
+    errors:       settings.getErrors('directoryIndex'),
+}) }}
+
 {{ forms.editableTableField({
     label: 'Copy files & directories',
     required: false,

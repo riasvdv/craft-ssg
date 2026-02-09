@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace rias\ssg\models;
 
 use craft\base\Model;
@@ -16,6 +18,8 @@ class Settings extends Model
     public int $concurrency = 1;
 
     public bool $clear = true;
+
+    public bool $directoryIndex = false;
 
     /** @var array<int, string[]> */
     public array $copy = [

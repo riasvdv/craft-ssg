@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace rias\ssg;
 
 use craft\helpers\StringHelper;
@@ -10,6 +12,7 @@ class Url
     public function __construct(
         private string $url,
         private string $destination,
+        private bool $directoryIndex = false,
     ) {
     }
 
@@ -17,8 +20,10 @@ class Url
     {
         $path = UrlHelper::rootRelativeUrl($this->url);
 
-        if ($path === '/') {
-            $path = '/index';
+        if ($this->directoryIndex) {
+            $path = StringHelper::ensureRight($path, '/') . 'index';
+        } elseif (str_ends_with($path, '/')) {
+            $path .= 'index';
         }
 
         return StringHelper::ensureRight($this->destination, '/') . $path . '.html';

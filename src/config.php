@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * SSG config.php
  *
@@ -31,6 +34,13 @@ return [
          * spatie/fork composer package is installed.
          */
         'concurrency' => 1,
+
+        /**
+         * Use folder-based structure with index.html files.
+         * When true: /about generates about/index.html
+         * When false: /about generates about.html
+         */
+        'directoryIndex' => false,
 
         /**
          * Define a set of directories and files to be copied along
