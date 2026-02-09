@@ -26,7 +26,7 @@ class Url
             $path .= 'index';
         }
 
-        return StringHelper::ensureRight($this->destination, '/') . $path . '.html';
+        return StringHelper::ensureRight($this->destination, '/') . ltrim($path, '/') . '.html';
     }
 
     public function lastSegment(): string

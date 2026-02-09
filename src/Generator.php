@@ -43,6 +43,8 @@ class Generator
 
     private bool $verbose = false;
 
+    private ?Collection $urls = null;
+
     private function __construct()
     {
         $this->phpExecutable = (new PhpExecutableFinder())->find();
@@ -103,6 +105,13 @@ class Generator
         return $this;
     }
 
+    public function urls(Collection $urls): self
+    {
+        $this->urls = $urls;
+
+        return $this;
+    }
+
     public function generate(): void
     {
         if ($this->concurrency > 1 && !InstalledVersions::isInstalled('spatie/fork')) {
@@ -149,7 +158,7 @@ class Generator
     {
         Console::output("ℹ️ Gathering content...");
 
-        $urls = $this->getUrls()->map(function(Url $url) {
+        $urls = ($this->urls ?? $this->getUrls())->map(function(Url $url) {
             return function() use ($url) {
                 return $this->generatePage($url);
             };
