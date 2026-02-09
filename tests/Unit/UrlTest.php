@@ -19,19 +19,19 @@ it('can be cast to string', function () {
 it('generates correct path for a simple url', function () {
     $url = new Url('https://example.com/about', '/tmp/static');
 
-    expect($url->path())->toBe('/tmp/static//about.html');
+    expect($url->path())->toBe('/tmp/static/about.html');
 });
 
 it('generates index.html for root url', function () {
     $url = new Url('https://example.com/', '/tmp/static');
 
-    expect($url->path())->toBe('/tmp/static//index.html');
+    expect($url->path())->toBe('/tmp/static/index.html');
 });
 
 it('generates correct path with directory index enabled', function () {
     $url = new Url('https://example.com/about', '/tmp/static', directoryIndex: true);
 
-    expect($url->path())->toBe('/tmp/static//about/index.html');
+    expect($url->path())->toBe('/tmp/static/about/index.html');
 });
 
 it('returns the last segment of the url', function () {
