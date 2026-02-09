@@ -122,6 +122,8 @@ class Generator
 
     public function clearDirectory(): self
     {
+        $this->destination = App::parseEnv($this->destination);
+
         if (!$this->disableClear) {
             FileHelper::removeDirectory($this->destination);
         }
