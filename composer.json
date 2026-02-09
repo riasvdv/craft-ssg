@@ -11,12 +11,13 @@
     "rss": "https://github.com/riasvdv/craft-ssg/releases.atom"
   },
   "require": {
-    "php": ">=8.2",
+    "php": ">=8.3",
     "craftcms/cms": "^5.4.0"
   },
   "require-dev": {
     "craftcms/ecs": "dev-main",
     "craftcms/phpstan": "dev-main",
+    "pestphp/pest": "^3.0",
     "spatie/fork": "^1.2"
   },
   "suggest": {
@@ -25,6 +26,11 @@
   "autoload": {
     "psr-4": {
       "rias\\ssg\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "rias\\ssg\\tests\\": "tests/"
     }
   },
   "extra": {
@@ -37,14 +43,16 @@
   "scripts": {
     "check-cs": "ecs check --ansi",
     "fix-cs": "ecs check --ansi --fix",
-    "phpstan": "phpstan --memory-limit=1G"
+    "phpstan": "phpstan --memory-limit=1G",
+    "test": "pest"
   },
   "config": {
     "sort-packages": true,
     "platform": {
-      "php": "8.2"
+      "php": "8.3"
     },
     "allow-plugins": {
+      "pestphp/pest-plugin": true,
       "yiisoft/yii2-composer": true,
       "craftcms/plugin-installer": true
     }
