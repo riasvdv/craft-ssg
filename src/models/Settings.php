@@ -6,9 +6,6 @@ namespace rias\ssg\models;
 
 use craft\base\Model;
 
-/**
- * ssg settings
- */
 class Settings extends Model
 {
     public string $baseUrl = '$DEFAULT_SITE_URL';
@@ -21,8 +18,8 @@ class Settings extends Model
 
     public bool $directoryIndex = false;
 
-    /** @var array<int, string[]> */
-    public array $copy = [
+    /** @var array<int, string[]>|null */
+    public ?array $copy = [
         ['@webroot/cpresources', 'cpresources'],
     ];
 
