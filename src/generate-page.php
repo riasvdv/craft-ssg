@@ -4,7 +4,16 @@ declare(strict_types=1);
 
 use craft\web\View;
 
-[$_, $url, $siteBaseUrlsJson, $newBaseUrl, $root, $webroot] = $argv;
+/** @var array<int, string> $arguments */
+$arguments = $_SERVER['argv'] ?? [];
+
+if (count($arguments) < 6) {
+    fwrite(STDERR, "Missing required arguments.\n");
+
+    exit(1);
+}
+
+[$_, $url, $siteBaseUrlsJson, $newBaseUrl, $root, $webroot] = $arguments;
 $siteBaseUrls = json_decode($siteBaseUrlsJson, true);
 
 $https = parse_url($url, PHP_URL_SCHEME) === 'https';

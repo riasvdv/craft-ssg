@@ -232,13 +232,27 @@ class Generator
     private function getUrls(): Collection
     {
         return collect()
-            ->merge(collect(Craft::$app->getSites()->getAllSites())->map(fn(Site $site) => $site->baseUrl)->filter())
-            ->merge(collect(Entry::findAll())->map(fn(Entry $entry) => $entry->getUrl()))
-            ->merge(collect(Category::findAll())->map(fn(Category $category) => $category->getUrl()))
-            ->merge(collect(User::findAll())->map(fn(User $user) => $user->getUrl()))
+            ->merge($this->getSiteBaseUrls())
+            ->merge($this->getElementUrls(Entry::class))
+            ->merge($this->getElementUrls(Category::class))
+            ->merge($this->getElementUrls(User::class))
             ->filter()
             ->unique()
             ->map(fn(string $url) => new Url($url, $this->destination, $this->directoryIndex));
+    }
+
+    private function getSiteBaseUrls(): Collection
+    {
+        return collect(Craft::$app->getSites()->getAllSites())
+            ->map(fn(Site $site) => $site->baseUrl)
+            ->filter();
+    }
+
+    private function getElementUrls(string $elementClass): Collection
+    {
+        return collect($elementClass::find()->site('*')->all())
+            ->map(fn(object $element) => $element->getUrl())
+            ->filter();
     }
 
     private function generatePage(Url $url): array

@@ -180,6 +180,75 @@ it('accepts a custom URL collection via the urls setter', function () {
     expect($generator)->toBeInstanceOf(Generator::class);
 });
 
+it('queries localized element urls across all sites', function () {
+    $query = new class([
+        new class('https://example.com/news/article-1') {
+            public function __construct(
+                private string $url,
+            ) {
+            }
+
+            public function getUrl(): string
+            {
+                return $this->url;
+            }
+        },
+        new class('https://example.com/fr/news/article-1') {
+            public function __construct(
+                private string $url,
+            ) {
+            }
+
+            public function getUrl(): string
+            {
+                return $this->url;
+            }
+        },
+    ]) {
+        public array $siteCalls = [];
+
+        public function __construct(
+            private array $elements,
+        ) {
+        }
+
+        public function site(mixed $site): self
+        {
+            $this->siteCalls[] = $site;
+
+            return $this;
+        }
+
+        public function all(): array
+        {
+            return $this->elements;
+        }
+    };
+
+    $elementClass = new class {
+        public static object $query;
+
+        public static function find(): object
+        {
+            return self::$query;
+        }
+    };
+
+    $elementClassName = $elementClass::class;
+    $elementClassName::$query = $query;
+
+    $generator = Generator::new();
+
+    $method = new ReflectionMethod(Generator::class, 'getElementUrls');
+    $urls = $method->invoke($generator, $elementClassName);
+
+    expect($query->siteCalls)->toBe(['*'])
+        ->and($urls->all())->toBe([
+            'https://example.com/news/article-1',
+            'https://example.com/fr/news/article-1',
+        ]);
+});
+
 it('throws when concurrency is greater than 1 without spatie/fork', function () {
     // spatie/fork IS installed as a dev dependency, so this test verifies
     // that concurrency > 1 works without throwing
